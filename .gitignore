@@ -1,0 +1,50 @@
+# Secrets and local configuration
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.venv/
+venv/
+env/
+
+# Node and frontend artifacts
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Generated application data
+backend/storage/chroma_db/
+backend/storage/uploads/
+*.sqlite3
+*.db
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

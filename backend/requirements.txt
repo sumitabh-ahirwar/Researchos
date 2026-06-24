@@ -1,0 +1,35 @@
+# API
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+
+# Core LLM + LangChain ecosystem
+langchain>=0.2.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+langchain-openai>=0.1.0
+langchain-mistralai
+langchain-chroma>=0.1.0
+langchain-text-splitters>=0.2.0
+
+# Vector store and PDF loading
+chromadb>=0.5.0
+pypdf>=4.0.0
+
+# Existing web research pipeline
+openai>=1.30.0
+tavily-python>=0.3.0
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+lxml>=5.0.0
+
+# Utilities used by the current project
+aiohttp>=3.9.0
+pandas>=2.0.0
+tiktoken>=0.6.0
+rich>=13.7.0
+tenacity>=8.2.0
+orjson>=3.9.0
+html5lib>=1.1
