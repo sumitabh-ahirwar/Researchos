@@ -3,7 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Research Report Generator</title>
+    <meta
+      name="description"
+      content="ResearchOS runs your question through a pipeline of specialised AI agents over the live web, your own PDFs, or both — with every step visible and every claim cited."
+    />
+    <meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080b14" media="(prefers-color-scheme: dark)" />
+
+    <!--
+      Fonts are self-hosted by Google's CDN. preconnect opens the connection
+      during HTML parse so the display font is not blocked on a cold DNS +
+      TLS round trip; display=swap keeps text visible while it loads.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&family=Plus+Jakarta+Sans:wght@600;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Applies the stored theme before first paint. Without this the page would
+      render light and then flip to dark on hydration, which is a visible flash.
+      Kept inline and tiny for that reason.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("researchos:theme") || "system";
+          var dark =
+            stored === "dark" ||
+            (stored === "system" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+        } catch (error) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+
+    <title>ResearchOS — Multi-agent research you can check</title>
   </head>
   <body>
     <div id="root"></div>

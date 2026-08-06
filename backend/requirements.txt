@@ -5,6 +5,13 @@ python-multipart>=0.0.9
 python-dotenv>=1.0.0
 pydantic>=2.5.0
 
+# Auth + persistence
+pymongo[srv]>=4.9          # 4.9 added AsyncMongoClient; srv extra pulls dnspython
+PyJWT>=2.8.0
+bcrypt>=4.0.0
+email-validator>=2.1.0
+certifi>=2024.2.2
+
 # Core LLM + LangChain ecosystem
 langchain>=0.2.0
 langchain-core>=0.2.0

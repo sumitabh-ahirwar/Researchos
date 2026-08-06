@@ -1,10 +1,13 @@
 import os
+from contextlib import asynccontextmanager
 from typing import List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .db.mongo import close_mongo, init_mongo
+from .routes.auth import router as auth_router
 from .routes.research import router as research_router
 
 load_dotenv()
@@ -23,10 +26,26 @@ def _allowed_origins() -> List[str]:
     ]
 
 
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """
+    Open the Mongo connection and build indexes once, at startup.
+
+    Connecting here rather than lazily means a bad MONGODB_URI surfaces
+    immediately instead of as a 500 on someone's first signup attempt.
+    """
+    await init_mongo()
+    try:
+        yield
+    finally:
+        await close_mongo()
+
+
 app = FastAPI(
     title="AI Research Report Generator API",
     description="FastAPI wrapper around the existing Python research agent pipeline.",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -38,6 +57,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(research_router, prefix="/api/research", tags=["research"])
 
 

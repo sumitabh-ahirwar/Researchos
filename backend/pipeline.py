@@ -26,9 +26,9 @@ def run_pipeline(topic: str) -> dict:
     
     #steps3
     
-    print("\n" + "=" * 50)
-    print(f"Starting writing phase for topic: {topic}")
-    print("="*50 + "\n")
+    # print("\n" + "=" * 50)
+    # print(f"Starting writing phase for topic: {topic}")
+    # print("="*50 + "\n")
     
     research_combined = (f"Search Results:\n{state['search_results']}\n\n"
         f"Scraped Content:\n{state['scraped_content']}")

@@ -1,0 +1,100 @@
+# Render Blueprint — deploys both services from this one repo.
+# https://render.com/docs/blueprint-spec
+#
+# Push this file to your repo, then in the Render dashboard: New -> Blueprint,
+# point it at the repo. Render reads this file and creates both services.
+#
+# IMPORTANT — read before deploying:
+#
+# 1. Service URLs below (researchos-api.onrender.com,
+#    researchos-frontend.onrender.com) are PREDICTED from the `name` fields.
+#    Render assigns exactly this URL unless the name is already taken by
+#    someone else's service, in which case it appends a random suffix. After
+#    the first deploy, check the actual URLs in the dashboard — if they
+#    differ, update FRONTEND_ORIGINS (api service) and VITE_API_BASE_URL
+#    (frontend service) to match, then redeploy both.
+#
+# 2. VITE_API_BASE_URL is baked into the frontend at BUILD time (Vite inlines
+#    env vars into the bundle) — changing it requires a rebuild, not just a
+#    restart.
+#
+# 3. The persistent disk on the API service requires a paid instance plan.
+#    Render's free web services do not support attached disks — uploaded PDFs
+#    and the Chroma index would be wiped on every restart/deploy without one.
+#
+# 4. Secrets (MONGODB_URI, TAVILY_API_KEY, MISTRAL_API_KEY) are marked
+#    `sync: false` below, meaning Render will NOT read them from this file —
+#    you paste the actual values into the service's Environment tab in the
+#    dashboard after the blueprint creates the service. Do not commit real
+#    keys into this file.
+
+services:
+  # ---------------------------------------------------------------------
+  # Backend API — FastAPI + the agent pipeline. Needs persistent disk for
+  # uploaded PDFs and the Chroma vector index (both under backend/storage/).
+  # ---------------------------------------------------------------------
+  - type: web
+    name: researchos-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: starter
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: researchos-storage
+      mountPath: /app/backend/storage
+      sizeGB: 5
+    envVars:
+      # --- secrets: set actual values in the Render dashboard, not here ---
+      - key: MONGODB_URI
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
+
+      # --- generated automatically by Render on first deploy ---
+      - key: JWT_SECRET
+        generateValue: true
+
+      # --- plain config ---
+      - key: JWT_EXPIRE_MINUTES
+        value: "10080"
+      - key: COOKIE_SECURE
+        value: "true"
+      # Frontend and API live on different onrender.com subdomains, which
+      # browsers treat as different *sites* (onrender.com is on the public
+      # suffix list). SameSite=Lax would silently drop the session cookie on
+      # every cross-site request — this must be "none" here. See the
+      # _cookie_samesite() docstring in backend/routes/auth.py.
+      - key: COOKIE_SAMESITE
+        value: "none"
+      # Update this if Render assigns the frontend a different URL — see
+      # note 1 above. No trailing slash.
+      - key: FRONTEND_ORIGINS
+        value: "https://researchos-frontend.onrender.com"
+
+  # ---------------------------------------------------------------------
+  # Frontend — static Vite build, served from Render's CDN. Free tier is
+  # fine for this one; it has no state of its own.
+  # ---------------------------------------------------------------------
+  - type: web
+    name: researchos-frontend
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    autoDeploy: true
+    envVars:
+      # Update this if Render assigns the API a different URL — see note 1
+      # above. No trailing slash. Changing this requires a rebuild (note 2).
+      - key: VITE_API_BASE_URL
+        value: "https://researchos-api.onrender.com"
+    routes:
+      # SPA fallback: react-router handles client-side paths like
+      # /app/research directly, so any path not matching a built file must
+      # still serve index.html rather than 404.
+      - type: rewrite
+        source: /*
+        destination: /index.html
