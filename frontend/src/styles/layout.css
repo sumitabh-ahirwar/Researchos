@@ -5,12 +5,27 @@
 
 .app-shell {
   display: grid;
-  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  /* Single column by default. The sidebar's track is declared ONLY when the
+     sidebar is actually rendered in flow — see [data-sidebar] below. */
+  grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
   background: var(--bg-canvas);
 }
 
-.app-shell[data-collapsed="true"] {
+/* React owns data-sidebar, so the grid can never reserve a track for a sidebar
+   that is not in the DOM.
+
+   It used to: the column list was hard-coded to two tracks, and when the
+   sidebar unmounted (Chrome re-evaluates width media queries against the paper
+   size while the print dialog is open, flipping isDesktop false) the sole
+   remaining child — .app-main — was placed into the 264px sidebar track. The
+   entire UI collapsed into a narrow strip down the left edge and stayed there
+   after the dialog closed. */
+.app-shell[data-sidebar="true"] {
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+}
+
+.app-shell[data-sidebar="true"][data-collapsed="true"] {
   grid-template-columns: var(--sidebar-width-collapsed) minmax(0, 1fr);
 }
 
@@ -494,8 +509,13 @@
 }
 
 @media (max-width: 1024px) {
+  /* Every data-attribute combination is listed so these win on specificity —
+     the [data-sidebar][data-collapsed] rule above is 0,3,0. Below this width
+     the sidebar is a fixed-position overlay and never occupies a track. */
   .app-shell,
-  .app-shell[data-collapsed="true"] {
+  .app-shell[data-collapsed="true"],
+  .app-shell[data-sidebar="true"],
+  .app-shell[data-sidebar="true"][data-collapsed="true"] {
     grid-template-columns: minmax(0, 1fr);
   }
 

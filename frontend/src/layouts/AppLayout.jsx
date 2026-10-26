@@ -59,8 +59,17 @@ export default function AppLayout() {
 
   const showSidebar = isDesktop || drawerOpen;
 
+  // True only when the sidebar occupies a grid track (desktop, in flow). Below
+  // 1025px it is a fixed-position overlay and takes no space. The stylesheet
+  // keys its column list off this so the grid and the DOM cannot disagree.
+  const sidebarInFlow = isDesktop && showSidebar;
+
   return (
-    <div className="app-shell" data-collapsed={isDesktop && collapsed}>
+    <div
+      className="app-shell"
+      data-collapsed={isDesktop && collapsed}
+      data-sidebar={sidebarInFlow}
+    >
       <a className="skip-link" href="#app-content">
         Skip to content
       </a>

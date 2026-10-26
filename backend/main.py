@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .db.mongo import close_mongo, init_mongo
+from .netfix import install_nat64_resolver_guard
 from .routes.auth import router as auth_router
 from .routes.research import router as research_router
 
@@ -33,7 +34,12 @@ async def lifespan(_: FastAPI):
 
     Connecting here rather than lazily means a bad MONGODB_URI surfaces
     immediately instead of as a 500 on someone's first signup attempt.
+
+    The resolver guard goes first: on a DNS64 network an unguarded lookup
+    hands PyMongo a dead NAT64 address per replica set member, and the
+    stacked connect timeouts blow past serverSelectionTimeoutMS.
     """
+    install_nat64_resolver_guard()
     await init_mongo()
     try:
         yield
