@@ -553,6 +553,10 @@ string — `generate_research_report` catches every exception
 Two services: a Python web service for the API, and a static site for the
 frontend.
 
+Continuous integration and deployment instructions are in
+[`docs/CI-CD.md`](docs/CI-CD.md). The GitHub Actions workflow validates pull
+requests and triggers Render deployments after successful pushes to `main`.
+
 **Backend** (Render Python runtime, or any equivalent host):
 
 | Setting | Value |

@@ -3,7 +3,6 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { ArrowRight, CheckCircle2, Lock, Mail, User } from "lucide-react";
 
 import AuthLayout from "../layouts/AuthLayout.jsx";
-import SocialButtons from "../components/auth/SocialButtons.jsx";
 import Button from "../components/ui/Button.jsx";
 import Field, { Checkbox, Input, PasswordInput } from "../components/ui/Field.jsx";
 import { Alert } from "../components/ui/Feedback.jsx";
@@ -168,10 +167,6 @@ export default function Signup() {
       </p>
 
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
-        <SocialButtons action="Sign up" />
-
-        <div className="auth-divider">or sign up with email</div>
-
         {formError && (
           <Alert variant="danger" title="Could not create your account">
             {formError}

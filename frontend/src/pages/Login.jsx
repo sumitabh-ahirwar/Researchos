@@ -3,7 +3,6 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, CheckCircle2, Lock, Mail } from "lucide-react";
 
 import AuthLayout from "../layouts/AuthLayout.jsx";
-import SocialButtons from "../components/auth/SocialButtons.jsx";
 import Button from "../components/ui/Button.jsx";
 import Field, { Checkbox, Input, PasswordInput } from "../components/ui/Field.jsx";
 import { Alert } from "../components/ui/Feedback.jsx";
@@ -114,10 +113,6 @@ export default function Login() {
       <p className="auth-card__lead">Log in to pick up your research where you left off.</p>
 
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
-        <SocialButtons action="Log in" />
-
-        <div className="auth-divider">or continue with email</div>
-
         {formError && (
           <Alert variant="danger" title="Could not sign you in">
             {formError}
